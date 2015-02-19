@@ -35,9 +35,16 @@ func abs(x int) int {
 	}
 }
 
-func (x1 *Hex) dist2Origin() int {
+func (x1 *Hex) Dist2Origin() int {
 	// twice the distance to the origin (2x so it's always an int)
 	return abs(x1.Q) + abs(x1.R) + abs(x1.Q+x1.R)
+}
+
+func (x1 *Hex) Dist2(x2 *Hex) int {
+	// twice the distance to specified hex
+	return abs(x1.Q-x2.Q) + abs(x1.R-x2.R) +
+		abs(x1.Q+x1.R-x2.Q-x2.R)
+
 }
 
 func hexesEq(h1, h2 []Hex) bool {

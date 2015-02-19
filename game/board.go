@@ -6,7 +6,7 @@ type Board struct {
 	EdgeLength     int    `json:"edgeLength"`
 }
 
-func (b *Board) pieces(p Player) HexSet {
+func (b *Board) Pieces(p Player) HexSet {
 	if p == White {
 		return b.WhitePositions
 	} else if p == Black {
@@ -37,7 +37,7 @@ func (b *Board) owner(x Hex) Player {
 }
 
 func (b *Board) onBoard(x Hex) bool {
-	return x.dist2Origin() < b.EdgeLength*2
+	return x.Dist2Origin() < b.EdgeLength*2
 }
 
 var standardBoard Board = Board{

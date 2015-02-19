@@ -2,15 +2,15 @@ package game
 
 type Segment struct {
 	base        Hex
-	length      int
+	Length      int
 	player      Player
 	orientation Direction
 }
 
 func (s *Segment) segPieces() []Hex {
-	result := make([]Hex, s.length)
+	result := make([]Hex, s.Length)
 	p := s.base
-	for i := 0; i < s.length; i++ {
+	for i := 0; i < s.Length; i++ {
 		result[i] = p
 		p = p.adjacent(s.orientation)
 	}

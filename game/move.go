@@ -32,7 +32,7 @@ func (m *Move) inlineMoved(b Board) []Hex {
 	} else {
 		attacked = pieces[0]
 	}
-	for i := 0; i < m.segment.length; i++ {
+	for i := 0; i < m.segment.Length; i++ {
 		attacked = attacked.adjacent(m.direction)
 		controller := b.owner(attacked)
 		if controller == NullPlayer {

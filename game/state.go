@@ -17,12 +17,12 @@ var Standard State = State{
 }
 
 func (g *State) Segments(p Player) []Segment {
-	pieces := g.Board.pieces(p)
+	pieces := g.Board.Pieces(p)
 	result := make([]Segment, 0, 3*len(pieces))
 	for pos, _ := range pieces {
 		s := Segment{
 			base:        pos,
-			length:      1,
+			Length:      1,
 			player:      p,
 			orientation: NullDirection,
 		}
@@ -34,7 +34,7 @@ func (g *State) Segments(p Player) []Segment {
 				s = Segment{
 					base:        pos,
 					orientation: d,
-					length:      length,
+					Length:      length,
 					player:      p,
 				}
 				next = next.adjacent(d)
@@ -145,7 +145,7 @@ func (g *State) GameOver() bool {
 }
 
 func (g *State) NumPieces(p Player) int {
-	return len(g.Board.pieces(p))
+	return len(g.Board.Pieces(p))
 }
 
 func (g *State) Outcome() Outcome {

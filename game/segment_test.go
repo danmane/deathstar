@@ -11,7 +11,7 @@ var tests = []testpair{
 	{
 		Segment{
 			base:        Hex{0, 0},
-			length:      1,
+			Length:      1,
 			player:      NullPlayer,
 			orientation: NullDirection,
 		},
@@ -19,7 +19,7 @@ var tests = []testpair{
 	{
 		Segment{
 			base:        Hex{0, 0},
-			length:      3,
+			Length:      3,
 			player:      NullPlayer,
 			orientation: MidRight,
 		},
