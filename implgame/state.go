@@ -50,7 +50,7 @@ func (g *State) Moves() []Move {
 	result := make([]Move, 0)
 	for _, s := range g.Segments(g.NextPlayer) {
 		for _, d := range Directions {
-			m := Move{segment: s, direction: d}
+			m := Move{Segment: s, direction: d}
 			if m.isValid(g) {
 				result = append(result, m)
 			}
@@ -62,7 +62,7 @@ func (g *State) Moves() []Move {
 // like all functions in this implementation, this returns a copy
 // if given an invalid move, behavior is undefined
 func (g *State) Update(m *Move) State {
-	ownPieces := m.segment.segPieces()
+	ownPieces := m.Segment.segPieces()
 	var enemyPieces []Hex
 	if m.inline() {
 		enemyPieces = m.inlineMoved(g.Board)

@@ -1,7 +1,7 @@
 package implgame
 
 type Move struct {
-	segment   Segment
+	Segment   Segment
 	direction Direction
 }
 
@@ -9,7 +9,7 @@ func (m *Move) isValid(g *State) bool {
 	if m.inline() {
 		return m.inlineMoved(g.Board) != nil
 	} else {
-		for _, h := range m.segment.segPieces() {
+		for _, h := range m.Segment.segPieces() {
 			dest := h.adjacent(m.direction)
 			if !g.Board.free(dest) {
 				return false
@@ -20,24 +20,24 @@ func (m *Move) isValid(g *State) bool {
 }
 
 func (m *Move) inline() bool {
-	return m.direction.colinear(m.segment.orientation)
+	return m.direction.colinear(m.Segment.orientation)
 }
 
 func (m *Move) inlineMoved(b Board) []Hex {
 	movedEnemyPieces := make([]Hex, 0)
-	pieces := m.segment.segPieces()
+	pieces := m.Segment.segPieces()
 	var attacked Hex
-	if m.segment.orientation == m.direction {
+	if m.Segment.orientation == m.direction {
 		attacked = pieces[len(pieces)-1]
 	} else {
 		attacked = pieces[0]
 	}
-	for i := 0; i < m.segment.Length; i++ {
+	for i := 0; i < m.Segment.Length; i++ {
 		attacked = attacked.adjacent(m.direction)
 		controller := b.owner(attacked)
 		if controller == NullPlayer {
 			return movedEnemyPieces
-		} else if controller == m.segment.player {
+		} else if controller == m.Segment.player {
 			return nil
 		}
 		movedEnemyPieces = append(movedEnemyPieces, attacked)
