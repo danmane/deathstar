@@ -8,12 +8,12 @@ import (
 
 func Benchmark_segments(b *testing.B) {
 	for i := 0; i <= b.N; i++ {
-		Standard.segments()
+		Standard.Segments(White)
 	}
 }
 
 func Test_segments(t *testing.T) {
-	numSegs := len(Standard.segments())
+	numSegs := len(Standard.Segments(White))
 	if numSegs != 55 {
 		t.Error("number segments in standard game: expected 55, got", numSegs)
 	}
