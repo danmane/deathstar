@@ -1,4 +1,4 @@
-package game
+package implgame
 
 type State struct {
 	Board          Board  `json:"board"`

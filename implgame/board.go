@@ -1,4 +1,4 @@
-package game
+package implgame
 
 type Board struct {
 	WhitePositions HexSet `json:"whitePositions"`

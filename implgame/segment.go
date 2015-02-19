@@ -1,4 +1,4 @@
-package game
+package implgame
 
 type Segment struct {
 	base        Hex

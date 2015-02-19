@@ -1,4 +1,4 @@
-package game
+package implgame
 
 type Move struct {
 	segment   Segment

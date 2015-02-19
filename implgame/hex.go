@@ -1,4 +1,4 @@
-package game
+package implgame
 
 type Hex struct {
 	Q int `json:"q"`
