@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/danmane/deathstar/implgame"
 	"math"
-	"sort"
 	"time"
 )
 
@@ -39,18 +38,6 @@ func Minimax(state *implgame.State, depth int, maximizer bool) (float64, implgam
 	}
 }
 
-type SortableMoveSlice []implgame.Move
-
-func (s SortableMoveSlice) Len() int {
-	return len(s)
-}
-func (s SortableMoveSlice) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-func (s SortableMoveSlice) Less(i, j int) bool {
-	return s[i].Segment.Length < s[j].Segment.Length
-}
-
 func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit int64) implgame.State {
 	var bestVal float64
 	if maximize {
@@ -59,18 +46,17 @@ func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit i
 		bestVal = math.Inf(1)
 	}
 	var bestState implgame.State
-	moves := state.Moves()
-	sort.Sort(SortableMoveSlice(moves))
+	futures := SortedFutures(state)
 
 	timeChan := time.After(time.Duration(timeLimit - 1000*1000*5))
 
-	for i := 0; i < len(moves); i++ {
+	for i := 0; i < futures.Len(); i++ {
 		select {
 		case <-timeChan:
-			fmt.Println("breaking out of TAB at iteration %v of %v\n", i, len(moves))
+			fmt.Println("breaking out of TAB at iteration %v of %v\n", i, futures.Len())
 			return bestState
 		default:
-			future := state.Update(&moves[i])
+			future := futures.states[i]
 			if maximize {
 				testVal, _ := AlphaBeta(&future, depth-1, bestVal, math.Inf(1), !maximize)
 				if testVal > bestVal {
@@ -97,10 +83,10 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta float64, maximizer 
 	var bestVal float64
 	var testVal float64
 	var bestState implgame.State
-	futures := state.Futures()
+	futures := SortedFutures(state)
 	if maximizer {
 		bestVal = math.Inf(-1)
-		for _, f := range futures {
+		for _, f := range futures.states {
 			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, false)
 			if testVal > bestVal {
 				bestVal = testVal
@@ -114,7 +100,7 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta float64, maximizer 
 		return bestVal, bestState
 	} else {
 		bestVal = math.Inf(1)
-		for _, f := range futures {
+		for _, f := range futures.states {
 			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, true)
 			if testVal < bestVal {
 				bestVal = testVal
@@ -161,24 +147,4 @@ func chooseMoveSimple(s *implgame.State) implgame.State {
 	fmt.Printf("assigned move has heuristic of %v\n", myHeuristic(&chosenMove, s.NextPlayer))
 	fmt.Printf("actual move: \n%v\n", chosenMove)
 	return chosenMove
-}
-
-func myHeuristic(state *implgame.State, whoami implgame.Player) float64 {
-	if state.GameOver() {
-		switch state.Outcome() {
-		case implgame.WhiteWins:
-			return math.Inf(1)
-		case implgame.BlackWins:
-			return math.Inf(-1)
-		default:
-			return 0.0
-		}
-	}
-	weights := []float64{3000.0, 10.0, 2.0, 2.0, 5.0}
-	var val float64 = 0
-	for i, _ := range Heuristics {
-		val += float64(Heuristics[i](state, whoami)) * weights[i]
-		val -= float64(Heuristics[i](state, whoami.Next())) * weights[i]
-	}
-	return val
 }

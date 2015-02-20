@@ -25,8 +25,7 @@ func main() {
 func wrapMove(s game.State, limit time.Duration) game.State {
 	inhaled := inhale(&s)
 	currentH := myHeuristic(inhaled, inhaled.NextPlayer)
-	fmt.Printf("i believe I am %v\n", inhaled.NextPlayer.String())
-	fmt.Printf("rec game in which my heuristic is %v\n", currentH)
+	fmt.Printf("Sidious (%v): %v\n", inhaled.NextPlayer.String(), currentH)
 	moveChooser := getMoveChooser(*depth, limit)
 	move := moveChooser(inhaled)
 	fmt.Printf("value of heuristic after chosen move is %v\n", myHeuristic(&move, inhaled.NextPlayer))

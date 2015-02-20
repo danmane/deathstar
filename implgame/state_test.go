@@ -19,7 +19,7 @@ func Test_segments(t *testing.T) {
 	}
 }
 
-func Benchmark_futures(b *testing.B) {
+func Benchmark_Futures(b *testing.B) {
 	b.ReportAllocs()
 	for n := 0; n <= b.N; n++ {
 		Standard.Futures()
