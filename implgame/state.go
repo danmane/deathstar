@@ -49,19 +49,16 @@ func (g *State) Update(m *Move) State {
 	}
 
 	copyAndMove := func(original HexIndexArray, hexesToMove []Hex) HexIndexArray {
-		var out HexIndexArray
-		for i := 0; i < 61; i++ {
-			out[i] = original[i]
-		}
-		for _, h := range hexesToMove {
-			out[h.idx()] = false
-		}
+		out := original.copy()
+		out.removeHexes(hexesToMove)
+		add := make([]Hex, 0, len(hexesToMove))
 		for _, h := range hexesToMove {
 			adj := h.adjacent(m.direction)
 			if g.Board.onBoard(adj) {
-				out[adj.idx()] = true
+				add = append(add, adj)
 			}
 		}
+		out.addHexes(add)
 		return out
 	}
 
@@ -106,12 +103,13 @@ func (g *State) GameOver() bool {
 }
 
 func (g *State) NumPieces(p Player) int {
-	return len(g.Board.Pieces(p))
+	// TODO add test
+	return g.Board.Pieces(p).length
 }
 
 func (g *State) Outcome() Outcome {
-	w := len(g.Board.WhitePositions)
-	b := len(g.Board.BlackPositions)
+	w := g.NumPieces(White)
+	b := g.NumPieces(Black)
 	if g.MovesRemaining <= 0 || w <= g.LossThreshold || b <= g.LossThreshold {
 		if w < b {
 			return BlackWins

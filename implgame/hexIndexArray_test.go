@@ -21,12 +21,12 @@ func Benchmark_HexIndexArray_lookup(b *testing.B) {
 }
 
 func Test_conversion(t *testing.T) {
-	converted := slice2HexIndexArray(standardWhitePositions.toSlice())
+	converted := slice2HexIndexArray(standardWhitePositions.ToSlice())
 	if standardWhitePositions != converted {
 		t.Log("something went wrong in HexIndexArray conversion")
 		for i := 0; i < 61; i++ {
-			if standardWhitePositions[i] != converted[i] {
-				t.Logf("original[%v] = %v", i, standardWhitePositions[i])
+			if standardWhitePositions.arr[i] != converted.arr[i] {
+				t.Logf("original[%v] = %v", i, standardWhitePositions.arr[i])
 			}
 		}
 		t.Error("conversion from", standardWhitePositions, "to", converted, "failed")

@@ -28,6 +28,15 @@ func TestFuturesAreValid(t *testing.T) {
 	}
 }
 
+func Benchmark_State_Update(b *testing.B) {
+	ms := Standard.Moves()
+	for n := 0; n <= b.N; n++ {
+		for _, m := range ms {
+			Standard.Update(&m)
+		}
+	}
+}
+
 func TestGameMarshalJSON(t *testing.T) {
 	g := Standard
 	var buf bytes.Buffer
