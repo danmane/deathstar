@@ -16,36 +16,6 @@ var Standard State = State{
 	LossThreshold:  8,
 }
 
-func (g *State) Segments(p Player) []Segment {
-	pieces := g.Board.Pieces(p)
-	result := make([]Segment, 0, 3*len(pieces))
-	for pos, _ := range pieces {
-		s := Segment{
-			base:        pos,
-			Length:      1,
-			player:      p,
-			orientation: NullDirection,
-		}
-		result = append(result, s)
-		for d := TopRight; d <= BotRight; d++ {
-			next := pos.adjacent(d)
-			length := 2
-			for length <= g.MarblesPerMove && pieces.has(next) {
-				s = Segment{
-					base:        pos,
-					orientation: d,
-					Length:      length,
-					player:      p,
-				}
-				next = next.adjacent(d)
-				length++
-				result = append(result, s)
-			}
-		}
-	}
-	return result
-}
-
 func (g *State) Moves() []Move {
 	result := make([]Move, 0)
 	for _, s := range g.Segments(g.NextPlayer) {
@@ -78,21 +48,21 @@ func (g *State) Update(m *Move) State {
 		blackMoved = ownPieces
 	}
 
-	copyAndMove := func(original HexSet, hexesToMove []Hex) HexSet {
-		result := make(HexSet)
-		for hex, _ := range original {
-			result[hex] = struct{}{}
+	copyAndMove := func(original HexIndexArray, hexesToMove []Hex) HexIndexArray {
+		var out HexIndexArray
+		for i := 0; i < 61; i++ {
+			out[i] = original[i]
 		}
-		for _, hex := range hexesToMove {
-			delete(result, hex)
+		for _, h := range hexesToMove {
+			out[h.idx()] = false
 		}
-		for _, hex := range hexesToMove {
-			adj := hex.adjacent(m.direction)
+		for _, h := range hexesToMove {
+			adj := h.adjacent(m.direction)
 			if g.Board.onBoard(adj) {
-				result[adj] = struct{}{}
+				out[adj.idx()] = true
 			}
 		}
-		return result
+		return out
 	}
 
 	newWhite := copyAndMove(g.Board.WhitePositions, whiteMoved)
@@ -122,18 +92,9 @@ func (g *State) Futures() []State {
 	return result
 }
 
-func (g1 *State) Eq(g2 *State) bool {
-	return g1.Board.eq(g2.Board) &&
-		g1.NextPlayer == g2.NextPlayer &&
-		g1.MovesRemaining == g2.MovesRemaining &&
-		g1.LossThreshold == g2.LossThreshold &&
-		g1.MarblesPerMove == g2.MarblesPerMove
-
-}
-
-func (g1 *State) ValidFuture(g2 *State) bool {
+func (g1 *State) ValidFuture(g2 State) bool {
 	for _, future := range g1.Futures() {
-		if future.Eq(g2) {
+		if future == g2 {
 			return true
 		}
 	}

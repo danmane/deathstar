@@ -12,13 +12,6 @@ func Benchmark_segments(b *testing.B) {
 	}
 }
 
-func Test_segments(t *testing.T) {
-	numSegs := len(Standard.Segments(White))
-	if numSegs != 55 {
-		t.Error("number segments in standard game: expected 55, got", numSegs)
-	}
-}
-
 func Benchmark_Futures(b *testing.B) {
 	b.ReportAllocs()
 	for n := 0; n <= b.N; n++ {
@@ -29,7 +22,7 @@ func Benchmark_Futures(b *testing.B) {
 func TestFuturesAreValid(t *testing.T) {
 	futures := Standard.Futures()
 	for _, f := range futures {
-		if !Standard.ValidFuture(&f) {
+		if !Standard.ValidFuture(f) {
 			t.Error("expected future ", f, "to be a valid future for game", Standard)
 		}
 	}
@@ -48,14 +41,14 @@ func TestGameMarshalJSON(t *testing.T) {
 	if err := json.NewDecoder(bytes.NewBufferString(canonical_encoded)).Decode(&canonical_decoded); err != nil {
 		t.Fatal(err)
 	}
-	if !g.Eq(&canonical_decoded) {
+	if g != canonical_decoded {
 		t.Error("standard game did not match canonical serialized game")
 	}
 	var gprime State
 	if err := json.NewDecoder(bytes.NewBuffer(data)).Decode(&gprime); err != nil {
 		t.Fatal(err)
 	}
-	if !g.Eq(&gprime) {
+	if g != gprime {
 		t.Error("game changed by serialization operation")
 		t.Log("before", g)
 		t.Log("serialized", buf.String())

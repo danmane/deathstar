@@ -3,19 +3,19 @@ package implgame
 import "testing"
 
 var b1 = Board{
-	WhitePositions: makeHexSet(Hex{0, 0}, Hex{0, 1}),
-	BlackPositions: makeHexSet(Hex{0, -1}),
+	WhitePositions: makeHexIndexArray(Hex{0, 0}, Hex{0, 1}),
+	BlackPositions: makeHexIndexArray(Hex{0, -1}),
 	EdgeLength:     2,
 }
 
 var b1_prime = Board{
-	WhitePositions: makeHexSet(Hex{0, 1}, Hex{0, 0}),
-	BlackPositions: makeHexSet(Hex{0, -1}),
+	WhitePositions: makeHexIndexArray(Hex{0, 1}, Hex{0, 0}),
+	BlackPositions: makeHexIndexArray(Hex{0, -1}),
 	EdgeLength:     2,
 }
 
 func TestBoardEq(t *testing.T) {
-	if !b1.eq(b1_prime) {
+	if b1 != b1_prime {
 		t.Error("equivalent boards were not equal")
 	}
 }
