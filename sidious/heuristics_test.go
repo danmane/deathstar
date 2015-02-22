@@ -25,6 +25,6 @@ func Benchmark_Heur_aggregateSegLengthSq(b *testing.B) {
 
 func Benchmark_myHeuristic(b *testing.B) {
 	for n := 0; n <= b.N; n++ {
-		myHeuristic(&implgame.Standard, implgame.White)
+		calcHeuristic(&implgame.Standard, defaultWeights)
 	}
 }

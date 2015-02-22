@@ -7,18 +7,33 @@ import (
 	"time"
 )
 
-func Minimax(state *implgame.State, depth int, maximizer bool) (float64, implgame.State) {
-	if depth == 0 || state.GameOver() {
-		return myHeuristic(state, implgame.White), *state
+func min64(a, b int64) int64 {
+	if a < b {
+		return a
+	} else {
+		return b
 	}
-	var bestVal float64
-	var testVal float64
+}
+func max64(a, b int64) int64 {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
+func Minimax(state *implgame.State, depth int, maximizer bool, weights HeuristicWeights) (int64, implgame.State) {
+	if depth == 0 || state.GameOver() {
+		return calcHeuristic(state, weights), *state
+	}
+	var bestVal int64
+	var testVal int64
 	var bestState implgame.State
 	futures := state.Futures()
 	if maximizer {
-		bestVal = math.Inf(-1)
+		bestVal = math.MinInt64
 		for _, f := range futures {
-			testVal, _ = Minimax(&f, depth-1, false)
+			testVal, _ = Minimax(&f, depth-1, false, weights)
 			if testVal > bestVal {
 				bestVal = testVal
 				bestState = f
@@ -26,9 +41,9 @@ func Minimax(state *implgame.State, depth int, maximizer bool) (float64, implgam
 		}
 		return bestVal, bestState
 	} else {
-		bestVal = math.Inf(1)
+		bestVal = math.MaxInt64
 		for _, f := range futures {
-			testVal, _ = Minimax(&f, depth-1, true)
+			testVal, _ = Minimax(&f, depth-1, true, weights)
 			if testVal < bestVal {
 				bestVal = testVal
 				bestState = f
@@ -38,12 +53,12 @@ func Minimax(state *implgame.State, depth int, maximizer bool) (float64, implgam
 	}
 }
 
-func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit int64) implgame.State {
-	var bestVal float64
+func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit int64, weights HeuristicWeights) implgame.State {
+	var bestVal int64
 	if maximize {
-		bestVal = math.Inf(-1)
+		bestVal = math.MinInt64
 	} else {
-		bestVal = math.Inf(1)
+		bestVal = math.MaxInt64
 	}
 	var bestState implgame.State
 	futures := SortedFutures(state)
@@ -58,13 +73,13 @@ func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit i
 		default:
 			future := futures.states[i]
 			if maximize {
-				testVal, _ := AlphaBeta(&future, depth-1, bestVal, math.Inf(1), !maximize)
+				testVal, _ := AlphaBeta(&future, depth-1, bestVal, math.MaxInt64, !maximize, weights)
 				if testVal > bestVal {
 					bestVal = testVal
 					bestState = future
 				}
 			} else {
-				testVal, _ := AlphaBeta(&future, depth-1, math.Inf(-1), bestVal, !maximize)
+				testVal, _ := AlphaBeta(&future, depth-1, math.MinInt64, bestVal, !maximize, weights)
 				if testVal < bestVal {
 					bestVal = testVal
 					bestState = future
@@ -76,22 +91,26 @@ func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit i
 	return bestState
 }
 
-func AlphaBeta(state *implgame.State, depth int, alpha, beta float64, maximizer bool) (float64, implgame.State) {
+func AlphaBeta(state *implgame.State,
+	depth int,
+	alpha, beta int64,
+	maximizer bool,
+	weights HeuristicWeights) (int64, implgame.State) {
 	if depth == 0 || state.GameOver() {
-		return myHeuristic(state, implgame.White), *state
+		return calcHeuristic(state, weights), *state
 	}
-	var bestVal float64
-	var testVal float64
+	var bestVal int64
+	var testVal int64
 	var bestState implgame.State
 	futures := SortedFutures(state)
 	if maximizer {
-		bestVal = math.Inf(-1)
+		bestVal = math.MinInt64
 		for _, f := range futures.states {
-			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, false)
+			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, false, weights)
 			if testVal > bestVal {
 				bestVal = testVal
 				bestState = f
-				alpha = math.Max(alpha, bestVal)
+				alpha = max64(alpha, bestVal)
 				if beta <= alpha {
 					break
 				}
@@ -99,13 +118,13 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta float64, maximizer 
 		}
 		return bestVal, bestState
 	} else {
-		bestVal = math.Inf(1)
+		bestVal = math.MaxInt64
 		for _, f := range futures.states {
-			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, true)
+			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, true, weights)
 			if testVal < bestVal {
 				bestVal = testVal
 				bestState = f
-				beta = math.Min(beta, bestVal)
+				beta = min64(beta, bestVal)
 				if beta <= alpha {
 					break
 				}
@@ -120,9 +139,9 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta float64, maximizer 
 // 	return m
 // }
 
-func getMoveChooser(depth int, limit time.Duration) func(*implgame.State) implgame.State {
+func getMoveChooser(depth int, limit time.Duration, weights HeuristicWeights) func(*implgame.State) implgame.State {
 	return func(s *implgame.State) implgame.State {
-		return TimedAlphaBeta(s, depth, s.NextPlayer == implgame.White, int64(limit))
+		return TimedAlphaBeta(s, depth, s.NextPlayer == implgame.White, int64(limit), defaultWeights)
 	}
 }
 
@@ -130,21 +149,3 @@ func getMoveChooser(depth int, limit time.Duration) func(*implgame.State) implga
 // 	m := TimedAlphaBeta(s, 2, s.NextPlayer == implgame.White, 500*1000*1000)
 // 	return m
 // }
-
-func chooseMoveSimple(s *implgame.State) implgame.State {
-	var chosenMove implgame.State
-	var bestVal float64 = math.Inf(-1)
-	futures := s.Futures()
-	for _, f := range futures {
-		testVal := myHeuristic(&f, s.NextPlayer)
-		if testVal > bestVal {
-			fmt.Printf("assigning chosenMove \n%v\n because %v >= %v\n", f, testVal, bestVal)
-			bestVal = testVal
-			chosenMove = f
-		}
-	}
-	fmt.Printf("best move has heuristic of %v\n", bestVal)
-	fmt.Printf("assigned move has heuristic of %v\n", myHeuristic(&chosenMove, s.NextPlayer))
-	fmt.Printf("actual move: \n%v\n", chosenMove)
-	return chosenMove
-}

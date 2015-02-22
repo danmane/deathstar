@@ -22,12 +22,19 @@ func main() {
 	quickstart.Play(player, wrapMove)
 }
 
+var defaultWeights = []int64{3000, 10, 2, 2, 5}
+
 func wrapMove(s game.State, limit time.Duration) game.State {
+	var mult int64
+	mult = 1
+	if s.NextPlayer == game.Black {
+		mult = -1
+	}
 	inhaled := inhale(&s)
-	currentH := myHeuristic(inhaled, inhaled.NextPlayer)
-	fmt.Printf("Sidious (%v): %v\n", inhaled.NextPlayer.String(), currentH)
-	moveChooser := getMoveChooser(*depth, limit)
+	currentH := calcHeuristic(inhaled, defaultWeights)
+	fmt.Printf("Sidious (%v): %v\n", inhaled.NextPlayer.String(), currentH*mult)
+	moveChooser := getMoveChooser(*depth, limit, defaultWeights)
 	move := moveChooser(inhaled)
-	fmt.Printf("value of heuristic after chosen move is %v\n", myHeuristic(&move, inhaled.NextPlayer))
+	fmt.Printf("value of heuristic after chosen move is %v\n", calcHeuristic(&move, defaultWeights)*mult)
 	return *exhale(&move)
 }

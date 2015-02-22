@@ -7,7 +7,7 @@ import (
 
 type SortedStates struct {
 	states []implgame.State
-	vals   []float64
+	vals   []int64
 }
 
 func (s SortedStates) Len() int {
@@ -23,9 +23,9 @@ func (s SortedStates) Less(i, j int) bool {
 
 func SortedFutures(s *implgame.State) SortedStates {
 	futures := s.Futures()
-	vals := make([]float64, len(futures))
+	vals := make([]int64, len(futures))
 	for i, f := range futures {
-		vals[i] = myHeuristic(&f, implgame.White)
+		vals[i] = calcHeuristic(&f, defaultWeights)
 	}
 	sortable := SortedStates{states: futures, vals: vals}
 	sort.Sort(sortable)

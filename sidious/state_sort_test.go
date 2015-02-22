@@ -14,9 +14,9 @@ func Benchmark_SortedFutures(b *testing.B) {
 func Benchmark_HeuristicFutures(b *testing.B) {
 	for n := 0; n <= b.N; n++ {
 		futures := implgame.Standard.Futures()
-		vals := make([]float64, len(futures))
+		vals := make([]int64, len(futures))
 		for i, f := range futures {
-			vals[i] = myHeuristic(&f, implgame.White)
+			vals[i] = calcHeuristic(&f, defaultWeights)
 		}
 	}
 }

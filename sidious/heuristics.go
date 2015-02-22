@@ -5,63 +5,65 @@ import (
 	"math"
 )
 
-type Heuristic func(g *implgame.State, p implgame.Player) int
+var Heuristics = []Heuristic{stones, segments, centrality, clusteredness, aggregateSegLengthSq}
 
-func stones(g *implgame.State, p implgame.Player) int {
-	return g.NumPieces(p)
+type Heuristic func(g *implgame.State, p implgame.Player) int64
+type HeuristicWeights []int64
+
+func stones(g *implgame.State, p implgame.Player) int64 {
+	return int64(g.NumPieces(p))
 }
 
-func segments(g *implgame.State, p implgame.Player) int {
-	return len(g.Segments(p))
+func segments(g *implgame.State, p implgame.Player) int64 {
+	return int64(len(g.Segments(p)))
 }
 
-func centrality(g *implgame.State, p implgame.Player) int {
-	var aggregateDist int = 0
+func centrality(g *implgame.State, p implgame.Player) int64 {
+	var aggregateDist int64 = 0
 	pieces := g.Board.Pieces(p)
 	for _, piece := range pieces.ToSlice() {
-		aggregateDist += piece.Dist2Origin()
+		aggregateDist += int64(piece.Dist2Origin())
 	}
 	return -aggregateDist
 }
 
-func clusteredness(g *implgame.State, p implgame.Player) int {
-	var aggregateDist int = 0
+func clusteredness(g *implgame.State, p implgame.Player) int64 {
+	var aggregateDist int64 = 0
 	pieces := g.Board.Pieces(p)
 	for _, piece1 := range pieces.ToSlice() {
 		for _, piece2 := range pieces.ToSlice() {
-			aggregateDist += piece1.Dist2(&piece2)
+			aggregateDist += int64(piece1.Dist2(&piece2))
 		}
 	}
 	return -aggregateDist
 }
 
-func aggregateSegLengthSq(g *implgame.State, p implgame.Player) int {
-	var aggregateLen int = 0
+func aggregateSegLengthSq(g *implgame.State, p implgame.Player) int64 {
+	var aggregateLen int64 = 0
 	segs := g.Segments(p)
 	for _, s := range segs {
-		aggregateLen += s.Length * s.Length
+		aggregateLen += int64(s.Length * s.Length)
 	}
 	return aggregateLen
 }
 
-func myHeuristic(state *implgame.State, whoami implgame.Player) float64 {
+func calcHeuristic(state *implgame.State, weights HeuristicWeights) int64 {
 	if state.GameOver() {
 		switch state.Outcome() {
 		case implgame.WhiteWins:
-			return math.Inf(1)
+			return math.MaxInt64
 		case implgame.BlackWins:
-			return math.Inf(-1)
+			return math.MinInt64
 		default:
 			return 0.0
 		}
 	}
-	weights := []float64{3000.0, 10.0, 2.0, 2.0, 5.0}
-	var val float64 = 0
-	for i, _ := range Heuristics {
-		val += float64(Heuristics[i](state, whoami)) * weights[i]
-		val -= float64(Heuristics[i](state, whoami.Next())) * weights[i]
+	var out int64 = 0
+	for i, h := range Heuristics {
+		var val, weight int64
+		val = h(state, implgame.White) - h(state, implgame.Black)
+		weight = weights[i]
+		out += val * weight
 	}
-	return val
+	return out
 }
-
-var Heuristics = []Heuristic{stones, segments, centrality, clusteredness, aggregateSegLengthSq}
