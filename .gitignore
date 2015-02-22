@@ -1,0 +1,6 @@
+*.out
+*.txt
+sidious/sidious
+sidious/sidious.test
+vader
+sftp-config.json
