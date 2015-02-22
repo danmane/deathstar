@@ -44,7 +44,7 @@ var standardBlackPositions = slice2HexIndexArray(
 )
 
 func (e HexIndexArray) MarshalJSON() ([]byte, error) {
-	return json.Marshal(e.toSlice())
+	return json.Marshal(e.ToSlice())
 }
 
 func (s *HexIndexArray) UnmarshalJSON(data []byte) error {
@@ -58,7 +58,7 @@ func (s *HexIndexArray) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e HexIndexArray) toSlice() []Hex {
+func (e HexIndexArray) ToSlice() []Hex {
 	out := make([]Hex, 0)
 	for i, v := range e {
 		if v {

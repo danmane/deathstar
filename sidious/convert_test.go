@@ -9,15 +9,15 @@ import (
 func Test_inhale(t *testing.T) {
 	standardIMPL := implgame.Standard
 	standardConverted := inhale(&game.Standard)
-	if !standardIMPL.Eq(standardConverted) {
-		t.Error("conversion did not work")
+	if standardIMPL != *standardConverted {
+		t.Error("conversion did not work", standardIMPL, *standardConverted)
 	}
 }
 
 func Test_exhale(t *testing.T) {
 	standardIMPL := implgame.Standard
 	thereAndBack := inhale(exhale(&standardIMPL))
-	if !standardIMPL.Eq(thereAndBack) {
-		t.Error("conversion did not work")
+	if standardIMPL != *thereAndBack {
+		t.Error("conversion did not work", standardIMPL, *thereAndBack)
 	}
 }

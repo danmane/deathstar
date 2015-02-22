@@ -18,7 +18,7 @@ func segments(g *implgame.State, p implgame.Player) int {
 func centrality(g *implgame.State, p implgame.Player) int {
 	var aggregateDist int = 0
 	pieces := g.Board.Pieces(p)
-	for piece, _ := range pieces {
+	for _, piece := range pieces.ToSlice() {
 		aggregateDist += piece.Dist2Origin()
 	}
 	return -aggregateDist
@@ -27,8 +27,8 @@ func centrality(g *implgame.State, p implgame.Player) int {
 func clusteredness(g *implgame.State, p implgame.Player) int {
 	var aggregateDist int = 0
 	pieces := g.Board.Pieces(p)
-	for piece1, _ := range pieces {
-		for piece2, _ := range pieces {
+	for _, piece1 := range pieces.ToSlice() {
+		for _, piece2 := range pieces.ToSlice() {
 			aggregateDist += piece1.Dist2(&piece2)
 		}
 	}

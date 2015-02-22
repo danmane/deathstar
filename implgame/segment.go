@@ -20,7 +20,7 @@ func (s *Segment) segPieces() []Hex {
 func (g *State) Segments(p Player) []Segment {
 	pieces := g.Board.Pieces(p)
 	result := make([]Segment, 0, 3*len(pieces))
-	for _, pos := range pieces.toSlice() {
+	for _, pos := range pieces.ToSlice() {
 		s := Segment{
 			base:        pos,
 			Length:      1,
