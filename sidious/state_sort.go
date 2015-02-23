@@ -25,7 +25,7 @@ func SortedFutures(s *implgame.State) SortedStates {
 	futures := s.Futures()
 	vals := make([]int64, len(futures))
 	for i, f := range futures {
-		vals[i] = CalcHeuristic(&f, DefaultWeights)
+		vals[i] = DefaultHeuristic(&f)
 	}
 	sortable := SortedStates{states: futures, vals: vals}
 	sort.Sort(sortable)

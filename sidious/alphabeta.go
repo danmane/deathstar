@@ -7,21 +7,17 @@ import (
 	"time"
 )
 
-func AlphaBetaWrap(state *implgame.State, weights HeuristicWeights, depth int) (r implgame.State) {
+func AlphaBetaWrap(state *implgame.State, h Heuristic, depth int) (r implgame.State) {
 	if depth < 1 {
 		panic("invalid depth for alphabetawrap")
 	}
-	_, r = AlphaBeta(state, depth, math.MinInt64, math.MaxInt64, state.NextPlayer == implgame.White, weights)
+	_, r = AlphaBeta(state, depth, math.MinInt64, math.MaxInt64, state.NextPlayer == implgame.White, h)
 	return
 }
 
-func AlphaBeta(state *implgame.State,
-	depth int,
-	alpha, beta int64,
-	maximizer bool,
-	weights HeuristicWeights) (int64, implgame.State) {
+func AlphaBeta(state *implgame.State, depth int, alpha, beta int64, maximizer bool, h Heuristic) (int64, implgame.State) {
 	if depth == 0 || state.GameOver() {
-		return CalcHeuristic(state, weights), *state
+		return h(state), *state
 	}
 	var bestVal int64
 	var testVal int64
@@ -30,7 +26,7 @@ func AlphaBeta(state *implgame.State,
 	if maximizer {
 		bestVal = math.MinInt64
 		for _, f := range futures.states {
-			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, false, weights)
+			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, false, h)
 			if testVal > bestVal {
 				bestVal = testVal
 				bestState = f
@@ -44,7 +40,7 @@ func AlphaBeta(state *implgame.State,
 	} else {
 		bestVal = math.MaxInt64
 		for _, f := range futures.states {
-			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, true, weights)
+			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, true, h)
 			if testVal < bestVal {
 				bestVal = testVal
 				bestState = f
@@ -58,7 +54,7 @@ func AlphaBeta(state *implgame.State,
 	}
 }
 
-func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit int64, weights HeuristicWeights) implgame.State {
+func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit int64, h Heuristic) implgame.State {
 	var bestVal int64
 	if maximize {
 		bestVal = math.MinInt64
@@ -78,13 +74,13 @@ func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit i
 		default:
 			future := futures.states[i]
 			if maximize {
-				testVal, _ := AlphaBeta(&future, depth-1, bestVal, math.MaxInt64, !maximize, weights)
+				testVal, _ := AlphaBeta(&future, depth-1, bestVal, math.MaxInt64, !maximize, h)
 				if testVal > bestVal {
 					bestVal = testVal
 					bestState = future
 				}
 			} else {
-				testVal, _ := AlphaBeta(&future, depth-1, math.MinInt64, bestVal, !maximize, weights)
+				testVal, _ := AlphaBeta(&future, depth-1, math.MinInt64, bestVal, !maximize, h)
 				if testVal < bestVal {
 					bestVal = testVal
 					bestState = future

@@ -9,14 +9,14 @@ import (
 func playGame(w, b sidious.HeuristicWeights, depth int) (score int) {
 	state := implgame.Standard
 	for !state.GameOver() {
-		fmt.Printf("move %v\n", state.MovesRemaining)
+		fmt.Printf("move %v, wPieces %v blackPieces %v\n", state.MovesRemaining, state.NumPieces(implgame.White), state.NumPieces(implgame.Black))
 		var nextWeight sidious.HeuristicWeights
 		if state.NextPlayer == implgame.White {
 			nextWeight = w
 		} else {
 			nextWeight = b
 		}
-		state = sidious.AlphaBetaWrap(&state, nextWeight, depth)
+		state = sidious.AlphaBetaWrap(&state, sidious.WeightedHeuristic(nextWeight), depth)
 	}
 	o := state.Outcome()
 	switch o {

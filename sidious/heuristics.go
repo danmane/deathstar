@@ -5,10 +5,11 @@ import (
 	"math"
 )
 
-var Heuristics = []Heuristic{stones, segments, centrality, clusteredness, aggregateSegLengthSq}
+var PartialHeuristics = []PartialHeuristic{stones, segments, centrality, clusteredness, aggregateSegLengthSq}
 var DefaultWeights = []int64{3000, 10, 2, 2, 5}
 
-type Heuristic func(g *implgame.State, p implgame.Player) int64
+type PartialHeuristic func(g *implgame.State, p implgame.Player) int64
+type Heuristic func(g *implgame.State) int64
 type HeuristicWeights []int64
 
 func stones(g *implgame.State, p implgame.Player) int64 {
@@ -48,23 +49,28 @@ func aggregateSegLengthSq(g *implgame.State, p implgame.Player) int64 {
 	return aggregateLen
 }
 
-func CalcHeuristic(state *implgame.State, weights HeuristicWeights) int64 {
-	if state.GameOver() {
-		switch state.Outcome() {
-		case implgame.WhiteWins:
-			return math.MaxInt64
-		case implgame.BlackWins:
-			return math.MinInt64
-		default:
-			return 0.0
+var DefaultHeuristic = WeightedHeuristic(DefaultWeights)
+
+func WeightedHeuristic(weights HeuristicWeights) Heuristic {
+	return func(state *implgame.State) int64 {
+
+		if state.GameOver() {
+			switch state.Outcome() {
+			case implgame.WhiteWins:
+				return math.MaxInt64
+			case implgame.BlackWins:
+				return math.MinInt64
+			default:
+				return 0.0
+			}
 		}
+		var out int64 = 0
+		for i, h := range PartialHeuristics {
+			var val, weight int64
+			val = h(state, implgame.White) - h(state, implgame.Black)
+			weight = weights[i]
+			out += val * weight
+		}
+		return out
 	}
-	var out int64 = 0
-	for i, h := range Heuristics {
-		var val, weight int64
-		val = h(state, implgame.White) - h(state, implgame.Black)
-		weight = weights[i]
-		out += val * weight
-	}
-	return out
 }

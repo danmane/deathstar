@@ -16,7 +16,7 @@ func Benchmark_HeuristicFutures(b *testing.B) {
 		futures := implgame.Standard.Futures()
 		vals := make([]int64, len(futures))
 		for i, f := range futures {
-			vals[i] = CalcHeuristic(&f, DefaultWeights)
+			vals[i] = DefaultHeuristic(&f)
 		}
 	}
 }

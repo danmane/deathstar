@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/danmane/deathstar/implgame"
 	"testing"
 )
 
 // var saneWeights, suicideWeights sidious.HeuristicWeights
-var saneWeights = []int64{1, 0, 0, 0, 0}
-var suicideWeights = []int64{-1, 0, 0, 0, 0}
+var saneWeights = []int64{100, 0, 0, 0, 0}
+var suicideWeights = []int64{-100, 0, -1, 0, 0}
 
 func Test_playGame(t *testing.T) {
 	if playGame(saneWeights, suicideWeights, 1) != 1 {
