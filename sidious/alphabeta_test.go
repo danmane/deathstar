@@ -15,7 +15,7 @@ var suicideHeuristic Heuristic = func(g *implgame.State) int64 {
 	return surviveHeuristic(g) * -1
 }
 
-func Test_AlphaBeta_Suicide(t *testing.T) {
+func Test_AlphaBeta_SimpleSuicide(t *testing.T) {
 	for depth := 1; depth < 3; depth++ {
 		state := implgame.Standard
 		oldstate := state

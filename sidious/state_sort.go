@@ -6,19 +6,19 @@ import (
 )
 
 type SortedStates struct {
-	states []implgame.State
-	vals   []int64
+	States []implgame.State
+	Vals   []int64
 }
 
 func (s SortedStates) Len() int {
-	return len(s.states)
+	return len(s.States)
 }
 func (s SortedStates) Swap(i, j int) {
-	s.states[i], s.states[j] = s.states[j], s.states[i]
-	s.vals[i], s.vals[j] = s.vals[j], s.vals[i]
+	s.States[i], s.States[j] = s.States[j], s.States[i]
+	s.Vals[i], s.Vals[j] = s.Vals[j], s.Vals[i]
 }
 func (s SortedStates) Less(i, j int) bool {
-	return s.vals[i] < s.vals[i]
+	return s.Vals[i] < s.Vals[i]
 }
 
 func SortedFutures(s *implgame.State) SortedStates {
@@ -27,7 +27,7 @@ func SortedFutures(s *implgame.State) SortedStates {
 	for i, f := range futures {
 		vals[i] = DefaultHeuristic(&f)
 	}
-	sortable := SortedStates{states: futures, vals: vals}
+	sortable := SortedStates{States: futures, Vals: vals}
 	sort.Sort(sortable)
 	return sortable
 }

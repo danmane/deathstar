@@ -25,7 +25,7 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta int64, maximizer bo
 	futures := SortedFutures(state)
 	if maximizer {
 		bestVal = math.MinInt64
-		for _, f := range futures.states {
+		for _, f := range futures.States {
 			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, false, h)
 			if testVal > bestVal {
 				bestVal = testVal
@@ -39,7 +39,7 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta int64, maximizer bo
 		return bestVal, bestState
 	} else {
 		bestVal = math.MaxInt64
-		for _, f := range futures.states {
+		for _, f := range futures.States {
 			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, true, h)
 			if testVal < bestVal {
 				bestVal = testVal
@@ -72,7 +72,7 @@ func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit i
 			fmt.Println("breaking out of TAB at iteration %v of %v\n", i, futures.Len())
 			return bestState
 		default:
-			future := futures.states[i]
+			future := futures.States[i]
 			if maximize {
 				testVal, _ := AlphaBeta(&future, depth-1, bestVal, math.MaxInt64, !maximize, h)
 				if testVal > bestVal {
