@@ -27,7 +27,7 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta int64, maximizer bo
 		bestVal = math.MinInt64
 		for _, f := range futures.States {
 			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, false, h)
-			if testVal > bestVal {
+			if testVal > bestVal || testVal == math.MinInt64 {
 				bestVal = testVal
 				bestState = f
 				alpha = max64(alpha, bestVal)
@@ -41,7 +41,7 @@ func AlphaBeta(state *implgame.State, depth int, alpha, beta int64, maximizer bo
 		bestVal = math.MaxInt64
 		for _, f := range futures.States {
 			testVal, _ = AlphaBeta(&f, depth-1, alpha, beta, true, h)
-			if testVal < bestVal {
+			if testVal < bestVal || testVal == math.MaxInt64 {
 				bestVal = testVal
 				bestState = f
 				beta = min64(beta, bestVal)

@@ -6,10 +6,8 @@ import (
 	"github.com/danmane/deathstar/sidious"
 )
 
-func playGame(w, b sidious.HeuristicWeights, depth int) (score int) {
-	state := implgame.Standard
+func playGame(state implgame.State, w, b sidious.HeuristicWeights, depth int) (score int) {
 	for !state.GameOver() {
-		fmt.Printf("move %v, wPieces %v blackPieces %v\n", state.MovesRemaining, state.NumPieces(implgame.White), state.NumPieces(implgame.Black))
 		var nextWeight sidious.HeuristicWeights
 		if state.NextPlayer == implgame.White {
 			nextWeight = w
@@ -32,8 +30,8 @@ func playGame(w, b sidious.HeuristicWeights, depth int) (score int) {
 	return
 }
 
-func playMatch(pos, neg sidious.HeuristicWeights, depth int) int {
-	return playGame(pos, neg, depth) - playGame(neg, pos, depth)
+func playMatch(state implgame.State, pos, neg sidious.HeuristicWeights, depth int) int {
+	return playGame(state, pos, neg, depth) - playGame(state, neg, pos, depth)
 }
 
 func main() {

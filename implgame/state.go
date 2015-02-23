@@ -107,18 +107,18 @@ func (g *State) NumPieces(p Player) int {
 	return g.Board.Pieces(p).length
 }
 
-func (g *State) Outcome() Outcome {
+func (g *State) Outcome() (o Outcome) {
+	o = NullOutcome
 	w := g.NumPieces(White)
 	b := g.NumPieces(Black)
 	if g.MovesRemaining <= 0 || w <= g.LossThreshold || b <= g.LossThreshold {
 		if w < b {
-			return BlackWins
-		} else if b < w {
-			return WhiteWins
+			o = BlackWins
+		} else if w > b {
+			o = WhiteWins
 		} else {
-			return Tie
+			o = Tie
 		}
-	} else {
-		return NullOutcome
 	}
+	return
 }
