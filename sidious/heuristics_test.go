@@ -1,4 +1,4 @@
-package main
+package sidious
 
 import (
 	"github.com/danmane/deathstar/implgame"
@@ -25,6 +25,6 @@ func Benchmark_Heur_aggregateSegLengthSq(b *testing.B) {
 
 func Benchmark_myHeuristic(b *testing.B) {
 	for n := 0; n <= b.N; n++ {
-		calcHeuristic(&implgame.Standard, defaultWeights)
+		CalcHeuristic(&implgame.Standard, DefaultWeights)
 	}
 }

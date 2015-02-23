@@ -1,14 +1,13 @@
-package main
+package implgame
 
 import (
 	"bytes"
 	"encoding/json"
 	"github.com/danmane/abalone/go/game"
-	"github.com/danmane/deathstar/implgame"
 )
 
-func inhale(s *game.State) *implgame.State {
-	var ret *implgame.State
+func Inhale(s *game.State) *State {
+	var ret *State
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&s); err != nil {
 		panic(err)
@@ -19,7 +18,7 @@ func inhale(s *game.State) *implgame.State {
 	return ret
 }
 
-func exhale(s *implgame.State) *game.State {
+func Exhale(s *State) *game.State {
 	var ret *game.State
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&s); err != nil {

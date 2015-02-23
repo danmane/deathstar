@@ -1,4 +1,4 @@
-package main
+package sidious
 
 import (
 	"fmt"
@@ -24,7 +24,7 @@ func max64(a, b int64) int64 {
 
 func Minimax(state *implgame.State, depth int, maximizer bool, weights HeuristicWeights) (int64, implgame.State) {
 	if depth == 0 || state.GameOver() {
-		return calcHeuristic(state, weights), *state
+		return CalcHeuristic(state, weights), *state
 	}
 	var bestVal int64
 	var testVal int64
@@ -91,13 +91,21 @@ func TimedAlphaBeta(state *implgame.State, depth int, maximize bool, timeLimit i
 	return bestState
 }
 
+func AlphaBetaWrap(state *implgame.State, weights HeuristicWeights, depth int) (r implgame.State) {
+	if depth < 1 {
+		panic("invalid depth for alphabetawrap")
+	}
+	_, r = AlphaBeta(state, depth, math.MinInt64, math.MaxInt64, state.NextPlayer == implgame.White, weights)
+	return
+}
+
 func AlphaBeta(state *implgame.State,
 	depth int,
 	alpha, beta int64,
 	maximizer bool,
 	weights HeuristicWeights) (int64, implgame.State) {
 	if depth == 0 || state.GameOver() {
-		return calcHeuristic(state, weights), *state
+		return CalcHeuristic(state, weights), *state
 	}
 	var bestVal int64
 	var testVal int64
@@ -141,7 +149,7 @@ func AlphaBeta(state *implgame.State,
 
 func getMoveChooser(depth int, limit time.Duration, weights HeuristicWeights) func(*implgame.State) implgame.State {
 	return func(s *implgame.State) implgame.State {
-		return TimedAlphaBeta(s, depth, s.NextPlayer == implgame.White, int64(limit), defaultWeights)
+		return TimedAlphaBeta(s, depth, s.NextPlayer == implgame.White, int64(limit), DefaultWeights)
 	}
 }
 

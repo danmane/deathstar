@@ -1,4 +1,4 @@
-package main
+package sidious
 
 import (
 	"github.com/danmane/deathstar/implgame"
@@ -6,6 +6,7 @@ import (
 )
 
 var Heuristics = []Heuristic{stones, segments, centrality, clusteredness, aggregateSegLengthSq}
+var DefaultWeights = []int64{3000, 10, 2, 2, 5}
 
 type Heuristic func(g *implgame.State, p implgame.Player) int64
 type HeuristicWeights []int64
@@ -47,7 +48,7 @@ func aggregateSegLengthSq(g *implgame.State, p implgame.Player) int64 {
 	return aggregateLen
 }
 
-func calcHeuristic(state *implgame.State, weights HeuristicWeights) int64 {
+func CalcHeuristic(state *implgame.State, weights HeuristicWeights) int64 {
 	if state.GameOver() {
 		switch state.Outcome() {
 		case implgame.WhiteWins:

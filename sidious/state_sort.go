@@ -1,4 +1,4 @@
-package main
+package sidious
 
 import (
 	"github.com/danmane/deathstar/implgame"
@@ -25,7 +25,7 @@ func SortedFutures(s *implgame.State) SortedStates {
 	futures := s.Futures()
 	vals := make([]int64, len(futures))
 	for i, f := range futures {
-		vals[i] = calcHeuristic(&f, defaultWeights)
+		vals[i] = CalcHeuristic(&f, DefaultWeights)
 	}
 	sortable := SortedStates{states: futures, vals: vals}
 	sort.Sort(sortable)

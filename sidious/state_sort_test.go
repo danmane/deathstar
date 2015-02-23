@@ -1,4 +1,4 @@
-package main
+package sidious
 
 import (
 	"github.com/danmane/deathstar/implgame"
@@ -16,7 +16,7 @@ func Benchmark_HeuristicFutures(b *testing.B) {
 		futures := implgame.Standard.Futures()
 		vals := make([]int64, len(futures))
 		for i, f := range futures {
-			vals[i] = calcHeuristic(&f, defaultWeights)
+			vals[i] = CalcHeuristic(&f, DefaultWeights)
 		}
 	}
 }

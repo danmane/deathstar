@@ -1,22 +1,21 @@
-package main
+package implgame
 
 import (
 	"github.com/danmane/abalone/go/game"
-	"github.com/danmane/deathstar/implgame"
 	"testing"
 )
 
-func Test_inhale(t *testing.T) {
-	standardIMPL := implgame.Standard
-	standardConverted := inhale(&game.Standard)
+func Test_Inhale(t *testing.T) {
+	standardIMPL := Standard
+	standardConverted := Inhale(&game.Standard)
 	if standardIMPL != *standardConverted {
 		t.Error("conversion did not work", standardIMPL, *standardConverted)
 	}
 }
 
-func Test_exhale(t *testing.T) {
-	standardIMPL := implgame.Standard
-	thereAndBack := inhale(exhale(&standardIMPL))
+func Test_Exhale(t *testing.T) {
+	standardIMPL := Standard
+	thereAndBack := Inhale(Exhale(&standardIMPL))
 	if standardIMPL != *thereAndBack {
 		t.Error("conversion did not work", standardIMPL, *thereAndBack)
 	}
