@@ -6,8 +6,8 @@ import (
 )
 
 // var saneWeights, suicideWeights sidious.HeuristicWeights
-var saneWeights = []int64{1000, 1, 1, 1, 1}
-var suicideWeights = []int64{-100, 0, -1, 0, 0}
+var saneWeights = []int16{1000, 1, 1, 1, 1}
+var suicideWeights = []int16{-100, 0, -1, 0, 0}
 
 func Test_playGame(t *testing.T) {
 	fastGame := implgame.Standard

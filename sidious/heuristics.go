@@ -5,12 +5,13 @@ import (
 	"math"
 )
 
+var NumHeuristics = 5
 var PartialHeuristics = []PartialHeuristic{stones, segments, centrality, clusteredness, aggregateSegLengthSq}
-var DefaultWeights = []int64{3000, 10, 2, 2, 5}
+var DefaultWeights = []int16{3000, 10, 2, 2, 5}
 
 type PartialHeuristic func(g *implgame.State, p implgame.Player) int64
 type Heuristic func(g *implgame.State) int64
-type HeuristicWeights []int64
+type HeuristicWeights []int16
 
 func stones(g *implgame.State, p implgame.Player) int64 {
 	return int64(g.NumPieces(p))
@@ -68,7 +69,7 @@ func WeightedHeuristic(weights HeuristicWeights) Heuristic {
 		for i, h := range PartialHeuristics {
 			var val, weight int64
 			val = h(state, implgame.White) - h(state, implgame.Black)
-			weight = weights[i]
+			weight = int64(weights[i])
 			out += val * weight
 		}
 		return out
